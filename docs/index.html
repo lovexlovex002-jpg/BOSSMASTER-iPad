@@ -58,8 +58,33 @@ SDJS-381</textarea>
 <summary>⚙️ แหล่งข้อมูล (source-template แบบเดียวกับในคอม)</summary>
 <label>เลือกแหล่ง</label>
 <select id="sourceSel"></select>
-<label>Proxy กัน CORS บน iPad (ถ้าเว็บต้นทางบล็อก — เว้นว่างได้, ใส่เช่น https://corsproxy.io/?url= )</label>
+<label>Proxy กัน CORS บน iPad (ถ้าเว็บต้นทางบล็อก — เว้นว่างได้)</label>
 <input id="proxyInput" placeholder="เช่น https://corsproxy.io/?url=">
+<div class="row">
+<select id="proxyPreset" style="flex:1">
+<option value="">— เลือก Proxy สำเร็จรูป —</option>
+<option value="https://corsproxy.io/?url=">corsproxy.io (ฟรี, ชั่วคราว)</option>
+<option value="https://api.allorigins.win/raw?url=">AllOrigins (ฟรี, ชั่วคราว)</option>
+<option value="https://proxy.cors.sh/">cors.sh (ต้องมี API key)</option>
+<option value="CUSTOM">🛠️ วิธีสร้าง Proxy ของตัวเองฟรี (แนะนำ)</option>
+</select>
+<button class="secondary" id="btnTestProxy" style="flex:0.7">📡 ทดสอบ Proxy</button>
+</div>
+<div id="proxyTestResult" class="hint" style="display:none"></div>
+<details>
+<summary>❓ Proxy เอาจากไหน? กดดู</summary>
+<div class="meta" style="font-size:13px;color:#94a3b8">
+<b>อันดับ 1 — สร้างเองฟรี (ดีที่สุด):</b><br>
+1) สมัคร <a href="https://workers.cloudflare.com" target="_blank" rel="noopener" style="color:#7dd3fc">Cloudflare Workers</a> (ฟรี)<br>
+2) สร้าง Worker ใหม่ → วางโค้ดจากไฟล์ <code>cors-proxy-worker.js</code> ใน repo นี้<br>
+3) Deploy → จะได้ URL เช่น <code>https://xxx.workers.dev/?url=</code> → เอามาใส่ช่อง Proxy<br>
+<br>
+<b>อันดับ 2 — ของฟรีชั่วคราว:</b> เลือกจากเมนูด้านบน (อาจช้า/ใช้ไม่ได้บางช่วง)<br>
+<br>
+<b>เช็คก่อนโทษ Proxy:</b> 1) VPN ต่ออยู่จริงไหม 2) เปิดเว็บต้นทางในแท็บใหม่ได้ไหม
+3) ตั้ง <code>detailUrlTemplate</code> เป็นของจริงหรือยัง (ค่าเริ่มต้นเป็น example.com ใช้ทดสอบไม่ได้)
+</div>
+</details>
 <label>JSON sources (แก้ไขได้, กดบันทึกจะจำในเครื่อง)</label>
 <textarea id="sourcesJson" style="min-height:160px;font-family:monospace;font-size:12px"></textarea>
 <div class="row"><button class="secondary" id="btnSaveSrc">💾 บันทึก sources</button>

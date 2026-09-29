@@ -80,8 +80,26 @@ async function fetchDoc(url, proxy, timeoutMs) {
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), timeoutMs || 45000);
   try {
-    const res = await fetch(target, { signal: ctrl.signal });
+    let res;
+    try {
+      res = await fetch(target, { signal: ctrl.signal });
+    } catch (e) {
+      const msg = String((e && e.name) || "") + " " + String((e && e.message) || e);
+      if (/abort/i.test(msg)) throw new Error("หมดเวลาเชื่อมต่อ (timeout) — VPN อาจช้า/หลุด ลองกดทดสอบ Proxy หรือเปลี่ยน Proxy");
+      if (/failed to fetch|networkerror|load failed/i.test(msg)) {
+        if (proxy) throw new Error("Failed to fetch ผ่าน Proxy นี้ — Proxy อาจล่ม/บล็อกเว็บนี้ ลองกดทดสอบ Proxy หรือเปลี่ยนตัวใหม่");
+        throw new Error("Failed to fetch แบบต่อตรง — โดน CORS บล็อก กรุณาใส่ Proxy ด้านบนแล้วกดทดสอบ Proxy");
+      }
+      throw e;
+    }
+    if (!res.ok) {
+      if (res.status === 403 || res.status === 401) throw new Error("ต้นทางตอบ " + res.status + " (เว็บกันบอท/ต้อง login) — ลองเปลี่ยน Proxy หรือเปิดต้นฉบับในเบราว์เซอร์ก่อน 1 ครั้ง");
+      if (res.status === 404) throw new Error("ต้นทางตอบ 404 — ตรวจ detailUrlTemplate ว่าถูกเว็บ/ถูกรูปแบบ {code} หรือยัง");
+      if (res.status === 429) throw new Error("ต้นทางตอบ 429 (โดน rate-limit) — รอสักครู่แล้วค้นทีละรหัส");
+      throw new Error("ต้นทางตอบ HTTP " + res.status + " — ลองเปลี่ยน Proxy");
+    }
     const html = await res.text();
+    if (!html || html.length < 500) throw new Error("โหลดมาได้แต่เนื้อหาว่าง/สั้นผิดปกติ — เว็บอาจกันบอทด้วย JavaScript ต้องใช้ Proxy แบบ render หรือเปิดต้นฉบับเอง");
     return new DOMParser().parseFromString(html, "text/html");
   } finally { clearTimeout(t); }
 }
@@ -156,6 +174,47 @@ $("btnSaveAll").onclick = async () => {
   for (const c of cards) await downloadAll(c);
 };
 $("btnClear").onclick = () => { $("results").innerHTML = ""; };
+$("proxyPreset").onchange = (e) => {
+  const v = e.target.value;
+  if (!v) return;
+  if (v === "CUSTOM") {
+    alert("สร้าง Proxy เองฟรี: เปิด Cloudflare Workers → วางโค้ดจากไฟล์ cors-proxy-worker.js ใน repo → Deploy → เอา URL มาใส่ช่อง Proxy");
+    e.target.value = "";
+    return;
+  }
+  $("proxyInput").value = v;
+  localStorage.setItem("bossmaster_proxy", v);
+};
+$("btnTestProxy").onclick = async () => {
+  const box = $("proxyTestResult");
+  const proxy = $("proxyInput").value.trim();
+  localStorage.setItem("bossmaster_proxy", proxy);
+  box.style.display = "block";
+  if (!proxy) {
+    box.textContent = "⚠️ ยังไม่ได้ใส่ Proxy — การต่อตรงมักโดน CORS บล็อก เลือก Proxy สำเร็จรูปด้านบนก่อน";
+    return;
+  }
+  box.textContent = "⏳ กำลังทดสอบ Proxy...";
+  const tests = ["https://example.com/", "https://httpbin.org/get"];
+  for (const u of tests) {
+    try {
+      const ctrl = new AbortController();
+      const t = setTimeout(() => ctrl.abort(), 20000);
+      const res = await fetch(proxy + encodeURIComponent(u), { signal: ctrl.signal });
+      clearTimeout(t);
+      const txt = await res.text();
+      if (res.ok && txt.length > 50) {
+        box.textContent = "✅ Proxy ใช้ได้ (โหลด " + u + " สำเร็จ " + txt.length + " ตัวอักษร) — ถ้าค้นแล้วยัง Failed to fetch แปลว่าเว็บต้นทางบล็อกเว็บนี้โดยเฉพาะ";
+        return;
+      }
+      box.textContent = "⚠️ Proxy ตอบ HTTP " + res.status + " ที่ " + u + " — ลองเปลี่ยน Proxy ตัวอื่น";
+      return;
+    } catch (e) {
+      box.textContent = "❌ Proxy นี้ใช้ไม่ได้ (" + String((e && e.message) || e) + ") — ลองเปลี่ยนตัวอื่น หรือสร้าง Worker เองตามวิธีใน ❓";
+      return;
+    }
+  }
+};
 $("btnSaveSrc").onclick = () => {
   try { const s = JSON.parse($("sourcesJson").value); saveSources(s); renderSourceUI(); alert("บันทึกแล้ว"); }
   catch(e){ alert("JSON ผิด: " + e.message); }
