@@ -1,0 +1,16 @@
+{
+  "name": "bossmaster-ipad",
+  "short_name": "BOSSMASTER",
+  "description": "ค้นรหัส + ดาวน์โหลดรูปบน iPad (ใช้ตอนเปิด VPN)",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
