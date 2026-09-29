@@ -1,5 +1,7 @@
 name: BOSSMASTER iPad Build
 on:
+  push:
+    branches: [ main ]
   workflow_dispatch:
 jobs:
   build:
@@ -13,3 +15,11 @@ jobs:
       - name: Build iOS Simulator
         run: |
           xcodebuild -project BOSSMASTERiPad.xcodeproj -scheme BOSSMASTERiPad -sdk iphonesimulator -configuration Debug -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build
+      - name: Package source
+        run: |
+          zip -r BOSSMASTER-iPad-source.zip BOSSMASTERiPad project.yml README_TH.md .github
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: BOSSMASTER-iPad-source
+          path: BOSSMASTER-iPad-source.zip
