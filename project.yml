@@ -1,0 +1,15 @@
+name: BOSSMASTERiPad
+options:
+  deploymentTarget:
+    iOS: "15.0"
+targets:
+  BOSSMASTERiPad:
+    type: application
+    platform: iOS
+    sources:
+      - BOSSMASTERiPad
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: com.bossmaster.ipad
+      SWIFT_VERSION: "5.0"
+      TARGETED_DEVICE_FAMILY: "2"
+      INFOPLIST_FILE: BOSSMASTERiPad/Info.plist
