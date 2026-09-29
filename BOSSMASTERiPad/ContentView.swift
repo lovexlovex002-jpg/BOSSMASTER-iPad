@@ -29,6 +29,10 @@ struct ContentView: View {
                     }
                 }
             }.padding().navigationTitle("ค้นหา")
+            TextField("ต้นทางค้น (ห้ามใส่รหัสผ่าน)", text: $model.sourceBase)
+                .textFieldStyle(.roundedBorder)
+                .font(.footnote)
+                .padding([.horizontal, .bottom])
         } detail: {
             if let record = model.selected { DetailView(record: record, model: model) }
             else { ContentUnavailableView("ค้นหารหัสหรือวางลิงก์", systemImage: "magnifyingglass") }

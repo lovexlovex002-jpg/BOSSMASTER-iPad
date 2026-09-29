@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BOSSMASTER iPad — ค้นรหัส + โหลดรูป (VPN)</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0f172a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<style>
+:root{color-scheme:dark light}
+body{font-family:-apple-system,system-ui,Thonburi,Sarabun,sans-serif;margin:0;background:#0f172a;color:#e2e8f0}
+header{position:sticky;top:0;background:#0f172ad9;backdrop-filter:blur(10px);padding:12px 14px;border-bottom:1px solid #334155;z-index:10}
+h1{font-size:18px;margin:0 0 8px}
+.sub{font-size:13px;color:#94a3b8}
+textarea{width:100%;min-height:84px;border-radius:10px;border:1px solid #334155;background:#020617;color:#fff;padding:10px;font-size:15px}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+button{flex:1;min-height:44px;border-radius:10px;border:0;font-size:16px;font-weight:600}
+.primary{background:#22c55e;color:#052e16}
+.secondary{background:#334155;color:#fff;flex:0.6}
+.ghost{background:transparent;border:1px solid #475569;color:#cbd5e1}
+main{padding:12px 14px 80px}
+.card{background:#020617;border:1px solid #1e293b;border-radius:14px;overflow:hidden;margin-bottom:12px}
+.card img{width:100%;display:block;background:#111}
+.card .p{padding:10px}
+.code{font-weight:800;font-size:17px;letter-spacing:.5px}
+.meta{font-size:13px;color:#94a3b8;margin:6px 0;white-space:pre-wrap}
+.btns{display:flex;gap:8px}
+.btns a,.btns button{flex:1;text-align:center;text-decoration:none;padding:10px;border-radius:10px;background:#1e293b;color:#fff;font-size:14px;border:0}
+.hint{background:#052e16;border:1px solid #15803d;padding:10px;border-radius:10px;font-size:13px;margin:10px 0}
+.warn{background:#451a03;border:1px solid #c2410c;padding:10px;border-radius:10px;font-size:13px;margin:10px 0}
+label{font-size:13px;color:#94a3b8}
+input,select{width:100%;padding:10px;border-radius:10px;border:1px solid #334155;background:#020617;color:#fff;font-size:14px;margin:4px 0 10px}
+details{margin:10px 0;background:#020617;border:1px solid #1e293b;border-radius:10px;padding:10px}
+</style>
+</head>
+<body>
+<header>
+<h1>★ BOSSMASTER iPad</h1>
+<div class="sub">ค้นเหมือนในคอม • เปิด VPN ก่อนค้น • วางรหัสได้หลายบรรทัด เช่น<br>START-628, MGOLD-064, START-639, START-640, MVSH-003, START-632, SDJS-381</div>
+<textarea id="codes" placeholder="วางรหัสที่นี่…&#10;START-628&#10;MGOLD-064&#10;START-639">START-628
+MGOLD-064
+START-639
+START-640
+MVSH-003
+START-632
+SDJS-381</textarea>
+<div class="row">
+<button class="primary" id="btnSearch">🔍 ค้นหา</button>
+<button class="secondary" id="btnSaveAll">⬇️ โหลดรูปทั้งหมด</button>
+<button class="ghost" id="btnClear">ล้าง</button>
+</div>
+<div id="vpnStatus" class="hint">✅ ขั้นตอน iPad: 1) เปิด VPN 2) กดค้นหา 3) แตะรูปค้าง → บันทึกรูปภาพ / กดปุ่มโหลด</div>
+</header>
+<main>
+<details open>
+<summary>⚙️ แหล่งข้อมูล (source-template แบบเดียวกับในคอม)</summary>
+<label>เลือกแหล่ง</label>
+<select id="sourceSel"></select>
+<label>Proxy กัน CORS บน iPad (ถ้าเว็บต้นทางบล็อก — เว้นว่างได้, ใส่เช่น https://corsproxy.io/?url= )</label>
+<input id="proxyInput" placeholder="เช่น https://corsproxy.io/?url=">
+<label>JSON sources (แก้ไขได้, กดบันทึกจะจำในเครื่อง)</label>
+<textarea id="sourcesJson" style="min-height:160px;font-family:monospace;font-size:12px"></textarea>
+<div class="row"><button class="secondary" id="btnSaveSrc">💾 บันทึก sources</button>
+<button class="ghost" id="btnResetSrc">รีเซ็ต</button></div>
+<div class="warn">ในคอมใช้ selectors เดิมได้เลย: title, actor, studio, release_date, duration, plot, genres, cover, poster, gallery — แอปนี้อ่าน <code>detailUrlTemplate</code> โดยแทน <code>{code}</code> ด้วยรหัส เช่น START-628</div>
+</details>
+<div id="results"></div>
+</main>
+<script src="app.js"></script>
+</body>
+</html>
